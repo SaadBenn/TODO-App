@@ -1,4 +1,5 @@
 import React from 'react';
+import Note from './Note';
 import { 
     StyleSheet, 
     Text,
@@ -9,7 +10,26 @@ import {
 } from 'react-native';
 
 export default class Main extends React.Component {
+    
+    constructor() {
+        super(props);
+        this.state = {
+            noteList: [],
+            noteText: '',
+        };
+    }
+
   render() {
+
+    let notes = this.state.noteList.map((val, key) => {
+       return 
+        <Note 
+            key={key} 
+            value={key} 
+            val={val}
+            onDelete={ ()=> this.deleteNote(key) } />
+    });
+
     return (
     <View style={styles.container}>
         <View style={styles.header}>
@@ -17,21 +37,43 @@ export default class Main extends React.Component {
         </View>
 
         <ScrollView style={styles.scrollContainer}>
+            {notes}
         </ScrollView>
 
         <View style={styles.footer}>
             <TextInput 
             style={styles.textInput}
+            onChangeText={(noteText)=> this.setState({noteText})}
+            value = {this.state.noteText}
             placeholder='Note:'
             placeholderTextColor='white'
             underlineColorAndroid='transparent'>
             </TextInput>
         </View>  
-        <TouchableOpacity style={styles.addButton}>
+
+        <TouchableOpacity onPress={ this.newNote.bind(this) } style={styles.addButton}>
             <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>  
     </View>
     );
+  }
+
+  newNote() {
+
+    if(this.state.noteText) {
+        let date = new Date();
+        this.state.noteList.push({
+            'date': date.getFullYear() + "/" + (date.getMonth()+1) + "/" + date.getDate(),
+            'note': this.state.noteText
+        });
+        this.setState({ noteList: this.state.noteList })
+        this.setState({ noteText: '' });
+    }
+  }
+
+  deleteNote(key) {
+    this.state.noteList.splice(key, 1);
+    this.setState.noteList({ noteList: this.state.noteList })
   }
 }
 
